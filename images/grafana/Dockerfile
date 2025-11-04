@@ -13,7 +13,7 @@ ARG GO_VERSION="1.25.0"
 
 RUN wget https://go.dev/dl/go${GO_VERSION}.$(echo "$(uname -s)" | tr A-Z a-z)-$(uname -m).tar.gz && tar -xvzf go${GO_VERSION}.$(echo "$(uname -s)" | tr A-Z a-z)-$(uname -m).tar.gz -C /usr/local 
 
-ENV GOPATH=/usr/local/go && \
+ENV GOPATH=/usr/local/go
 ENV PATH=$PATH:/usr/local/go/bin
 
 #Install Node.js
