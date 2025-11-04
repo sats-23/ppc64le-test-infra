@@ -1,5 +1,5 @@
 # Build stage
-FROM registry.redhat.io/ubi9/ubi@sha256:dec374e05cc13ebbc0975c9f521f3db6942d27f8ccdf06b180160490eef8bdbc AS builder
+FROM registry.access.redhat.com/ubi9/ubi:9.6 AS builder
 
 RUN dnf update -y && \
     dnf install -y \
@@ -44,7 +44,7 @@ RUN git clone https://github.com/grafana/grafana.git . && \
     make build
 
 # Runtime stage
-FROM registry.redhat.io/ubi9/ubi@sha256:dec374e05cc13ebbc0975c9f521f3db6942d27f8ccdf06b180160490eef8bdbc
+FROM registry.access.redhat.com/ubi9/ubi:9.6
 
 RUN dnf update -y && \
     dnf install -y --setopt=install_weak_deps=false \
