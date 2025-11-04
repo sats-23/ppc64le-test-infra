@@ -2,7 +2,7 @@
 FROM registry.access.redhat.com/ubi9/ubi:9.6 AS builder
 
 RUN dnf update -y && \
-    dnf install -y \
+    dnf install -y --allowerasing\
         git curl wget ca-certificates python3 python3-pip && \
     dnf groupinstall -y "Development Tools" && \
     dnf clean all && \
