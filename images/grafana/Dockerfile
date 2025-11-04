@@ -1,11 +1,22 @@
 # Build stage
-FROM golang:1.24.4 AS builder
+FROM registry.redhat.io/ubi9/ubi@sha256:dec374e05cc13ebbc0975c9f521f3db6942d27f8ccdf06b180160490eef8bdbc AS builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git curl build-essential ca-certificates python3 python3-pip \
-    chromium chromium-driver && \
-    rm -rf /var/lib/apt/lists/*
+RUN dnf update -y && \
+    dnf install -y \
+        git curl wget build-essential ca-certificates python3 python3-pip \
+        chromium chromium-headless && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
+#Install Go 
+ARG GO_VERSION="1.25.0"
+
+RUN wget https://go.dev/dl/go${GO_VERSION}.$(echo "$(uname -s)" | tr A-Z a-z)-$(uname -m).tar.gz && tar -xvzf go${GO_VERSION}.$(echo "$(uname -s)" | tr A-Z a-z)-$(uname -m).tar.gz -C /usr/local 
+
+ENV GOPATH=/usr/local/go && \
+ENV PATH=$PATH:/usr/local/go/bin
+
+#Install Node.js
 ENV NVM_DIR=/root/.nvm
 ENV NODE_VERSION=22.16.0
 
@@ -33,11 +44,13 @@ RUN git clone https://github.com/grafana/grafana.git . && \
     make build
 
 # Runtime stage
-FROM debian:bookworm-slim
+FROM registry.redhat.io/ubi9/ubi@sha256:dec374e05cc13ebbc0975c9f521f3db6942d27f8ccdf06b180160490eef8bdbc
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN dnf update -y && \
+    dnf install -y --setopt=install_weak_deps=false \
     ca-certificates curl tini && \
-    rm -rf /var/lib/apt/lists/*
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 RUN useradd -u 472 -r -g 0 -d /usr/share/grafana -s /sbin/nologin grafana
 
